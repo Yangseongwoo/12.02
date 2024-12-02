@@ -29,35 +29,42 @@
 
         let number = 0;
         let scale = 10;
-        let size = 10;
+        let size = 0;
 
         function drawFlower() {
-            let hue = number * 3;
-            let angle = number * 0.8;
-            let radius = scale * Math.sqrt(number) + 100;
-            let positionX = radius * Math.cos(angle) + canvas.width / 2;
-            let positionY = radius * Math.sin(angle) + canvas.height / 2;
-
-            ctx.fillStyle = `hsl(${hue}, 70%, 60%)`;
-            ctx.strokeStyle = `hsl(${hue + 180}, 70%, 30%)`;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            for(let i = 0; i < 5; i++) {
-                let starAngle = (i * Math.PI * 2) / 5 - Math.PI / 2;
-                let x = positionX + Math.cos(starAngle) * size;
-                let y = positionY + Math.sin(starAngle) * size;
-                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            }
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
+            const maxRadius = Math.sqrt(Math.pow(canvas.width, 2) + Math.pow(canvas.height, 2)) / 2;
             
-            size += 0.25;
-            number += 0.2;
+            for (let i = 0; i < 20; i++) {
+                let angle = (Math.PI * 2 * i) / 20 + number * 0.1;
+                let radius = scale * number;
+                
+                if (radius > maxRadius) {
+                    number = 0;
+                    size = 0;
+                }
+                
+                let positionX = radius * Math.cos(angle) + canvas.width / 2;
+                let positionY = radius * Math.sin(angle) + canvas.height / 2;
+
+                let maxSize = Math.min(canvas.width, canvas.height) * 0.02;
+                size = Math.min(number * 0.2, maxSize);
+
+                ctx.fillStyle = `hsl(${number * 2 % 360}, 70%, 50%)`;
+                ctx.strokeStyle = `hsl(${(number * 2 + 180) % 360}, 70%, 40%)`;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(positionX, positionY, size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+            
+            number += 0.5;
         }
 
         function animate() {
-            /* ctx.clearRect(0, 0, canvas.width, canvas.height); */
+            ctx.fillStyle = 'rgba(135, 206, 235, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             drawFlower();
             requestAnimationFrame(animate);
         }
